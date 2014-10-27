@@ -1,122 +1,130 @@
 /*
-    Signup Form Script
-    This script will load the state select list and validate the form before submission
-*/
+ Signup Form Script
+ This script will load the state select list and validate the form before submission
+ */
 
-"use strict";
-
-document.addEventListener("DOMContentLoaded", function() {
-    //console.log("DOM fully loaded and parsed");
-    for(var i = 0; i < usStates.length; i++) {
-        var x = document.createElement("OPTION");
-        x.value = usStates[i].code;
-        x.text = usStates[i].name;
-        document.getElementById("state").appendChild(x);
+document.addEventListener('DOMContentLoaded', function () {
+    var form = document.forms['signup'];
+    var stateList = form.state;
+    for (var idx = 0; idx < usStates.length; idx++) {
+        var state = usStates[idx];
+        var option = document.createElement("OPTION");
+        option.value = state.code;
+        option.text = state.name;
+        stateList.appendChild(option);
     }
 
-    document.forms['signup'].occupation.addEventListener("change", function() {
-        if (document.forms['signup'].occupation.value == "other") {
-            document.forms["signup"].occupationOther.style.display = "block";
+    var occupation = form.occupation;
+    form.occupation.addEventListener('change', function() {
+        var occupationElement = occupation.value;
+        if(occupationElement == "other") {
+            form.occupationOther.style.display = "block";
         } else {
-            document.forms['signup'].occupationOther.value = '';
-            document.forms['signup'].occupationOther.style.display = "none";
+            form.occupationOther.style.display = "none";
+            form.occupationOther.value = '';
         }
     });
 
-    document.forms['signup'].cancelButton.addEventListener("click", function() {
-        if(window.confirm('Sure?')) {
-            window.location = "https://google.com";
+    form.cancelButton.addEventListener('click', function() {
+        if(window.confirm("You sure you want to leave?")) {
+            window.location = "https://www.google.com";
         }
     });
 
-    document.forms['signup'].addEventListener('submit', onSubmit);
+    function onSubmit(eventObject) {
+        var firstName = form.firstName.value;
+        var lastName = form.lastName.value;
+        var address1 = form.address1.value;
+        var city = form.city.value;
+        var state = form.state.value;
+        var zip = form.zip.value;
+        var currentOccupation = form.occupation.value;
 
-    function onSubmit(evt) {
-        var valid = true;
-        try {
-            valid = validateForm(this);
-        }
-        catch(exception) {
-            console.log(exception);
-            valid = false; //stop form submission to see error
-        }
-        //use new standard preventDefault() if available
-        if (!valid) {
-            evt.preventDefault();
-        }
-        evt.returnValue = valid; //for older browsers
-        return valid;
-    } //onSubmit()
+        var validateForm = true;
 
-    function validateForm() {
-
-        var valid = true;
-        if (document.forms['signup'].firstName.value.trim().length = 0) {
-            document.forms.signup.firstName.className = 'form-control invalid';
-            valid = false;
+        if(firstName.trim().length == 0) {
+            validateForm = false;
+            form.firstName.className = 'form-control invalid';
         } else {
-            document.forms.signup.firstName.className = 'form-control';
+            form.firstName.className = 'form-control';
         }
 
-        if(document.forms.signup.lastName.value.trim().length = 0){
-                document.forms['signup'].lastName.className = 'form-control invalid';
-                valid = false;
+        if(lastName.trim().length == 0) {
+            validateForm = false;
+            form.lastName.className = 'form-control invalid';
         } else {
-                document.forms.signup.lastName.className = 'form-control';
+            form.lastName.className = 'form-control';
         }
 
-        if ( document.forms['signup'].address1.value.trim().length = 0) {
-            document.forms['signup'].address1.className = 'form-control invalid';
-            valid = false;
+        if(address1.trim().length == 0) {
+            validateForm = false;
+            form.address1.className = 'form-control invalid';
         } else {
-            document.forms['signup'].address1.className = 'form-control';
+            form.address1.className = 'form-control';
         }
 
-        if (document.forms['signup'].city.value.trim().length = 0) {
-            document.forms['signup'].city.className = 'form-control invalid';
-            valid = false;
+        if(city.trim().length == 0) {
+            validateForm = false;
+            form.city.className = 'form-control invalid';
         } else {
-            document.forms['signup'].city.className = 'form-control';
+            form.city.className = 'form-control';
         }
 
-        if (!document.forms['signup'].state) {
-            document.forms['signup'].state.className = 'form-control invalid';
-            valid = false;
+        var testZipCode = new RegExp('^\\d{5}$');
+        if(!testZipCode.test(zip)) {
+            validateForm = false;
+            form.zip.className = 'form-control invalid';
         } else {
-            document.forms['signup'].state.className = 'form-control';
+            form.zip.className = 'form-control';
         }
 
-        if (!document.forms['signup'].occupation.value) {
-            valid = false;
-            document.forms['signup'].occupation.className = 'form-control invalid';
+        if(!currentOccupation) {
+            validateForm = false;
+            form.occupation.className = 'form-control invalid';
         } else {
-            document.forms['signup'].occupation.className = 'form-control';
+            form.occupation.className = 'form-control';
         }
 
-        var zipRegExp = new RegExp('^\\d{5}$');
-        if (!zipRegExp.test(document.forms['signup'].zip.value)) {
-            document.forms['signup'].zip.className = 'form-control invalid';
-            valid = false;
+        if (currentOccupation == "other") {
+            var currentOccupationOther = form.occupationOther.value;
+            if(currentOccupationOther.trim().length == 0) {
+                validateForm = false;
+                form.occupationOther.className = 'form-control invalid';
+            } else {
+                form.occupationOther.className = 'form-control';
+            }
+        }
+
+        if(!state) {
+            validateForm = false;
+            form.state.className = 'form-control invalid';
         } else {
-            document.forms['signup'].zip.className = 'form-control';
+            form.state.className = 'form-control';
         }
 
-        if(document.forms['signup'].birthdate.value) {
-            var age = document.forms['signup'].birthdate.value;
+        if(form.birthdate.value) {
+            var age = form.birthdate.value;
             if(calculateAge(age) >= 13) {
-                document.forms['signup'].birthdate.className = 'form-control';
+                form.birthdate.className = 'form-control';
                 document.getElementById('birthdateMessage').innerHTML = "";
             } else {
-                document.forms['signup'].birthdate.className = 'form-control invalid';
-                valid = false;
+                form.birthdate.className = 'form-control invalid';
+                validateForm = false;
                 document.getElementById('birthdateMessage').innerHTML = "You are not 13 years old.";
             }
         } else {
-            document.forms['signup'].birthdate.className = 'form-control invalid';
-            valid = false;
+            form.birthdate.className = 'form-control invalid';
+            validateForm = false;
         }
-        return valid;
+
+        console.log(age);
+        if(!validateForm) {
+            eventObject.preventDefault();
+            eventObject.returnValue = false;
+            return false;
+        }
     }
+    form.addEventListener('submit', onSubmit);
 
     function calculateAge (dob) {
         dob = new Date(dob);
@@ -132,4 +140,3 @@ document.addEventListener("DOMContentLoaded", function() {
         return yearsDiff;
     }
 });
-
