@@ -35,9 +35,11 @@ document.addEventListener('DOMContentLoaded', function () {
         var lastName = signupForm.lastName;
         var address1 = signupForm.address1;
         var city = signupForm.city;
+        var birthDate = signupForm.birthdate;
         var state = signupForm.state.value;
         var zip = signupForm.zip.value;
         var currentOccupation = occupation.value;
+
 
         var valid = true;
 
@@ -101,18 +103,18 @@ document.addEventListener('DOMContentLoaded', function () {
             signupForm.state.className = 'form-control';
         }
 
-        if(signupForm.birthdate.value) {
-            var age = signupForm.birthdate.value;
+        if(birthdate.value) {
+            var age = birthDate.value;
             if(calculateAge(age) >= 13) {
-                signupForm.birthdate.className = 'form-control';
+                birthDate.className = 'form-control';
                 document.getElementById('birthdateMessage').innerHTML = "";
             } else {
-                signupForm.birthdate.className = 'form-control invalid';
+                birthDate.className = 'form-control invalid';
                 valid = false;
                 document.getElementById('birthdateMessage').innerHTML = "You are not 13 years old.";
             }
         } else {
-            signupForm.birthdate.className = 'form-control invalid';
+            birthDate.className = 'form-control invalid';
             valid = false;
         }
 
